@@ -2,6 +2,7 @@ package dinero.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +118,32 @@ public class UserDao implements IUserDao {
 		}
 		return result;
 	
+	}
+	
+	public dinero.model.User getUserByUserAccAndPwd(String account ,String pwd){
+		
+		Transaction transaction = null;
+		User user = null;
+		
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+			transaction = session.beginTransaction();
+
+			user = (User) session.createQuery("FROM User U WHERE U.username = :userName").setParameter("userName",account).uniqueResult();
+
+			if (user != null && user.getPassword().equals(pwd)) {
+				
+			}
+			System.out.println("login ok");
+			transaction.commit();
+		
+			return user;
+			
+			
+		}
+
+		
+		
 	}
 
 }

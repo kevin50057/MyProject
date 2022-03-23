@@ -9,11 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-
 import dinero.model.LoginBean;
 import dinero.model.LoginDao;
+import dinero.model.User;
+import dinero.model.UserDao;
 
 /**
  * @email Ramesh Fadatare
@@ -47,14 +46,24 @@ public class LoginController extends HttpServlet {
 
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
+		LoginBean loginBean = new LoginBean();
+		loginBean.setUsername(username);
+		loginBean.setPassword(password);
 
 			if (loginDao.validate(username,password)) {
+				UserDao userDao = new UserDao();
+				User user = userDao.getUserByUserAccAndPwd(username, password);
+				System.out.println(user);
+				request.getSession().setAttribute("userNowLogin", user);
+//				response.sendRedirect(request.getContextPath()+"//dineroHome.jsp");
+
 				RequestDispatcher dispatcher = request.getRequestDispatcher("profiles/profiles-list.jsp");
 				dispatcher.forward(request, response);
 			} else {
 				request.setAttribute("NOTIFICATION", "請輸入正確的帳號密碼!!");
 				RequestDispatcher dispatcher = request.getRequestDispatcher("login/login.jsp");
 				dispatcher.forward(request, response);
+
 				throw new Exception("登入失敗 :)");
 			}
 		} 
